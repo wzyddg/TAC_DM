@@ -30,7 +30,13 @@ public class DMService implements Runnable {
 		}
 		return null;
 	}
-
+	
+	public String execute(String command) {
+		String result="";
+		result = result+ command+" excited!";
+		return result;
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -39,18 +45,23 @@ public class DMService implements Runnable {
 			System.out.println("---start Service----");
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())), true);
-
+			String request="";
 			while (true) {
 				String str = in.readLine();
-				if (str != null) {
+				request=request+str;
+				System.out.println(request);
+				if (request.contains("]")) {
 					System.out.println("Request:" + str);
-					String aString = "aasdf";
-					out.println("backdfds");
+//					out.println("Request:" + str);
+					String resultString = execute(request);
+					out.println(resultString);
 					out.flush();
-				} else { // closeconnection
-					System.out.println("read nulg and out");
 					break;
-				}
+				} 
+//				else { // closeconnection
+//					System.out.println("read nulg and out");
+//					break;
+//				}
 			}
 			out.close();
 			in.close();
