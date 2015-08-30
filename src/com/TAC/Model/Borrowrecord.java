@@ -1,6 +1,6 @@
 package com.TAC.Model;
 
-// Generated 2015-8-30 13:11:46 by Hibernate Tools 4.3.1
+// Generated 2015-8-30 16:35:56 by Hibernate Tools 4.3.1
 
 import java.util.Date;
 
