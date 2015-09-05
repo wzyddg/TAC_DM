@@ -9,15 +9,15 @@ import java.util.Date;
  */
 public class Borrowrecord implements java.io.Serializable {
 
-	private Integer recordId;
-	private String borrowerName;
-	private String tele;
-	private int itemId;
-	private String itemName;
-	private String itemInfo;
-	private Date borrowDate;
-	private Date returnDate;
-	private int number;
+	public Integer recordId;
+	public String borrowerName;
+	public String tele;
+	public Integer itemId;
+	public String itemName;
+	public String itemInfo;
+	public Date borrowDate;
+	public Date returnDate;
+	public int number;
 
 	public Borrowrecord() {
 	}
@@ -63,7 +63,7 @@ public class Borrowrecord implements java.io.Serializable {
 		return this.itemId;
 	}
 
-	public void setItemId(int itemId) {
+	public void setItemId(Integer itemId) {
 		this.itemId = itemId;
 	}
 

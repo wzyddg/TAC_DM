@@ -7,12 +7,12 @@ package com.TAC.Model;
  */
 public class Iteminfo implements java.io.Serializable {
 
-	private Integer id;
-	private String name;
-	private String description;
-	private String type;
-	private int count;
-	private int leftcount;
+	public Integer id;
+	public String name;
+	public String description;
+	public String type;
+	public int count;
+	public int leftcount;
 
 	public Iteminfo() {
 	}
