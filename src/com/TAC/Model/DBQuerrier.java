@@ -1,6 +1,5 @@
 package com.TAC.Model;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
@@ -12,12 +11,6 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-
-import sun.nio.cs.ext.GBK;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
-//+","
 
 public class DBQuerrier {
 	static SessionFactory sessionFactory;

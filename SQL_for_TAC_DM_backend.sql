@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: 2015-08-30 13:45:55
+-- Generation Time: 2015-09-12 11:28:20
 -- 服务器版本： 5.6.22
 -- PHP Version: 5.6.5
 
@@ -28,15 +28,15 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `borrowrecord` (
   `recordId` int(11) NOT NULL,
-  `borrowerName` varchar(32) NOT NULL,
-  `tele` varchar(32) NOT NULL,
-  `itemId` int(11) NOT NULL,
-  `ItemName` varchar(32) NOT NULL,
-  `itemInfo` varchar(128) NOT NULL,
+  `borrowerName` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tele` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `itemId` int(11) DEFAULT NULL,
+  `ItemName` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `itemInfo` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `borrowDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `returnDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `number` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `returnDate` timestamp NULL DEFAULT NULL,
+  `number` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -46,11 +46,12 @@ CREATE TABLE IF NOT EXISTS `borrowrecord` (
 
 CREATE TABLE IF NOT EXISTS `iteminfo` (
   `id` int(11) NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `count` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `count` int(11) NOT NULL DEFAULT '1',
+  `leftcount` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
