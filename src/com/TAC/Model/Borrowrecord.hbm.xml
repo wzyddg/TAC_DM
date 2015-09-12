@@ -27,7 +27,7 @@
             <column name="borrowDate" length="19" not-null="true" />
         </property>
         <property name="returnDate" type="timestamp">
-            <column name="returnDate" length="19" not-null="true" />
+            <column name="returnDate" length="19" not-null="false" />
         </property>
         <property name="number" type="int">
             <column name="number" not-null="true" />

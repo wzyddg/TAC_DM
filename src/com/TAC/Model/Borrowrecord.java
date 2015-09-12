@@ -22,7 +22,7 @@ public class Borrowrecord implements java.io.Serializable {
 	public Borrowrecord() {
 	}
 
-	public Borrowrecord(String borrowerName, String tele, int itemId,
+	public Borrowrecord(String borrowerName, String tele, Integer itemId,
 			String itemName, String itemInfo, Date borrowDate, Date returnDate,
 			int number) {
 		this.borrowerName = borrowerName;

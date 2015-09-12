@@ -1,5 +1,7 @@
 package com.TAC.Model;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -10,6 +12,10 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+
+import sun.nio.cs.ext.GBK;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 //+","
 
@@ -41,6 +47,8 @@ public class DBQuerrier {
 
 		for (int i = 0; i < infos.size(); i++) {
 			Iteminfo iteminfo = infos.get(i);
+			if(iteminfo.id==-822)
+				continue;
 			if (iteminfo.leftcount > 0) {
 				result = result + iteminfo.id + "," + iteminfo.name + ","
 						+ iteminfo.description + "," + iteminfo.type + ","
@@ -64,6 +72,7 @@ public class DBQuerrier {
 
 		for (int i = 0; i < records.size(); i++) {
 			Borrowrecord record = records.get(i);
+			// TODO: check 30 days and return status
 			result = result
 					+ record.recordId
 					+ ","
@@ -92,23 +101,173 @@ public class DBQuerrier {
 	}
 
 	public static String getDevice(String itemId) {
-		return "3 item " + itemId;
+		Session session = sessionStart();
+		String hql = "from Iteminfo where id = ? ";
+		Query query = ((SharedSessionContract) session).createQuery(hql);
+		
+		int itemIdInt = 0;
+		try {
+			itemIdInt = Integer.parseInt(itemId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return "[]";
+		}
+		query.setInteger(0, itemIdInt);
+		String result = "[";
+		Iteminfo iteminfo = (Iteminfo) query.uniqueResult();
+
+		if (iteminfo!=null) {
+				result = result + iteminfo.id + "," + iteminfo.name + ","
+						+ iteminfo.description + "," + iteminfo.type + ","
+						+ iteminfo.count + "," + iteminfo.leftcount;
+		}
+		result += "]";
+		return result;
 	}
 
 	public static String getRecord(String recordId) {
-		return "4 rec " + recordId;
+		Session session = sessionStart();
+		String hql = "from Borrowrecord where recordId = ?";
+		Query query = ((SharedSessionContract) session).createQuery(hql);
+		
+		int recordIdInt = 0;
+		try {
+			recordIdInt = Integer.parseInt(recordId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return "[]";
+		}
+		query.setInteger(0, recordIdInt);
+		String result = "[";
+
+		Borrowrecord record = (Borrowrecord) query.uniqueResult();
+		// System.out.println(records.size());
+
+		if (record!=null) {
+			result = result
+					+ record.recordId
+					+ ","
+					+ record.borrowerName
+					+ ","
+					+ record.tele
+					+ ","
+					+ (record.itemId == null || record.itemId == 0 ? ""
+							: record.itemId)
+					+ ","
+					+ (record.itemName == null ? "" : record.itemName)
+					+ ","
+					+ (record.itemInfo == null ? "" : record.itemInfo)
+					+ ","
+					+ record.borrowDate.getTime()
+					+ ","
+					+ (record.returnDate == null ? 0 : record.returnDate
+							.getTime()) + "," + record.number;
+		}
+
+		result += "]";
+		return result;
 	}
 
 	public static String borrowItem(String command) {
-		return "5 borrow " + command;
+		Session session = sessionStart();
+		String[] parars = command.split(","); 
+		Borrowrecord br = null;
+		
+		int count = 0;
+		
+		try {
+			count = Integer.parseInt(parars[5]);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("problem1");
+			return "[0]";
+		}
+		
+		if("".equals(parars[2])){
+			br = new Borrowrecord(parars[0], parars[1], null, parars[3], parars[4], new Date(), null, count);
+		}else {
+			String ii = getDevice(parars[2]);
+			if(!"[]".equals(ii)){
+				String[] infos = ii.split(",");
+				String leftCount = infos[5].substring(0, infos[5].length()-1);
+				if(Integer.parseInt(leftCount)<1){
+					System.out.println("problem2");
+					return "[0]";
+				}
+				System.out.println(infos[2]);
+				br = new Borrowrecord(parars[0], parars[1], Integer.parseInt(parars[2]), infos[1], infos[2], new Date(), null, count);
+			}else {
+				System.out.println("problem2");
+				return "[0]";
+			}
+		}
+		
+		Transaction tx = session.beginTransaction();
+		
+		try {
+			session.save(br);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("problem3");
+			return "[0]";
+		}
+
+		tx.commit();
+		
+		
+		return "[1]";
 	}
 
-	public static String returnItem(String command) {
-		return "6 return " + command;
+	public static String returnItem(String recordId) {
+		String record = DBQuerrier.getRecord(recordId);
+		if(record.equals("[]"))
+			return "[0]";
+		
+		String[] paras = record.split(",");
+		if(!("0".equals(paras[paras.length-2])))
+			return "[0]";
+		
+		Session session = sessionStart();
+		Transaction tx = session.beginTransaction();
+		String hql = "update Borrowrecord br set br.returnDate = ? where br.recordId = ?";
+		Query query = ((SharedSessionContract) session).createQuery(hql);
+
+		int recordIdInt = 0;
+
+		try {
+			recordIdInt = Integer.parseInt(recordId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return "[0]";
+		}
+
+		query.setDate(0, new Date());
+		System.out.println(new Date());
+		query.setInteger(1, recordIdInt);
+
+		int resInt = query.executeUpdate();
+		tx.commit();
+		session.close();
+
+		return "[" + resInt + "]";
 	}
 
 	public static String adminLogin(String password) {
-		return "7 login " + password;
+		Session session = sessionStart();
+		String hql = "from Iteminfo where id = ? ";
+		Query query = ((SharedSessionContract) session).createQuery(hql);
+		
+		query.setInteger(0, -822);
+		String result = "[";
+		Iteminfo iteminfo = (Iteminfo) query.uniqueResult();
+
+		if (iteminfo!=null) {
+			result+= (password.equals(iteminfo.name)? 1:0);
+		}else {
+			result+=0;
+		}
+		result += "]";
+		return result;
 	}
 
 	public static String getDeviceListAsAdmin(String type) {
@@ -158,14 +317,14 @@ public class DBQuerrier {
 
 		System.out.println(command + " " + itemId + " " + itemCount);
 
-		query.setInteger(0,itemCount);
-		query.setInteger(1,itemId);
-		
+		query.setInteger(0, itemCount);
+		query.setInteger(1, itemId);
+
 		int resInt = query.executeUpdate();
 		tx.commit();
 		session.close();
 
-		return "["+resInt+"]";
+		return "[" + resInt + "]";
 	}
 
 	public static String wrongCode(String command) {
@@ -176,7 +335,7 @@ public class DBQuerrier {
 		// TODO Auto-generated method stub
 		String result = "";
 		// result=DBQuerrier.getDeviceList("ios");
-		result = DBQuerrier.editLeftNumber("1,1");
+		result = DBQuerrier.borrowItem("ÍõÔóÓî¹þ¹þ¹þ,445454555454544,1,,,1");
 		System.out.println(result);
 	}
 

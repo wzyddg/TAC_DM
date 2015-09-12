@@ -5,7 +5,7 @@
  <session-factory>
   <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
   <property name="hibernate.connection.password">tacdm</property>
-  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tacdm</property>
+  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tacdm?useUnicode=true&amp;characterEncoding=UTF-8</property>
   <property name="hibernate.connection.username">tacdm</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
   <mapping resource="com/TAC/Model/Borrowrecord.hbm.xml"/>
