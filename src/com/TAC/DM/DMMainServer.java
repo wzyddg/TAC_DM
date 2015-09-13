@@ -1,9 +1,6 @@
 package com.TAC.DM;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,7 +15,7 @@ public class DMMainServer {
 		try {
 			// Create socket for TCP
 			ServerSocket server = new ServerSocket(8222);	//822 means 'TACB'ackend in 9-button keypad
-			//ChatServiceServer.setUserList(threadList);
+			//ChatServiceServer.setUserList(thread我当时就懵逼了List);
 			System.out.println("TAC-DM Server Start, waitng on Port 8222...");
 			
 			while (true) {

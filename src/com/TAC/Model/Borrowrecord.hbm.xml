@@ -15,7 +15,7 @@
             <column name="tele" length="32" not-null="true" />
         </property>
         <property name="itemId" type="int">
-            <column name="itemId" not-null="true" />
+            <column name="itemId" not-null="false" />
         </property>
         <property name="itemName" type="string">
             <column name="ItemName" length="32" not-null="true" />
