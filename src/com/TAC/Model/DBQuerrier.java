@@ -21,17 +21,16 @@ public class DBQuerrier {
 			configuration = new Configuration().configure();
 			StandardServiceRegistry standardServiceRegistry = new StandardServiceRegistryBuilder()
 					.applySettings(configuration.getProperties()).build();
-			sessionFactory = configuration
-					.buildSessionFactory(standardServiceRegistry);
+			sessionFactory = configuration.buildSessionFactory(standardServiceRegistry);
 		}
 		return (Session) sessionFactory.openSession();
 	}
 
 	public static String getDeviceList(String type) {
 		Session session = sessionStart();
-		String hql = "from Iteminfo where type = ? ";
+		String hql = "from Iteminfo where type like ? ";
 		Query query = ((SharedSessionContract) session).createQuery(hql);
-		query.setString(0, type);
+		query.setString(0, type+'%');
 		String result = "[";
 		List<Iteminfo> infos = query.list();
 		// if (infos.size() == 0)
@@ -43,9 +42,8 @@ public class DBQuerrier {
 			if (iteminfo.id == -822)
 				continue;
 			if (iteminfo.leftcount > 0) {
-				result = result + iteminfo.id + "," + iteminfo.name + ","
-						+ iteminfo.description + "," + iteminfo.type + ","
-						+ iteminfo.count + "," + iteminfo.leftcount;
+				result = result + iteminfo.id + "," + iteminfo.name + "," + iteminfo.description + "," + iteminfo.type
+						+ "," + iteminfo.count + "," + iteminfo.leftcount;
 				if (i != infos.size() - 1)
 					result = result + "|";
 			}
@@ -69,28 +67,15 @@ public class DBQuerrier {
 			// done
 			long currentTime = new Date().getTime();
 			if (!(record.returnDate == null)) {
-				if (currentTime - record.returnDate.getTime() > 30 * 24 * 60
-						* 60 * 1000) // 30*24*60*60*1000 ms
+				if (currentTime - record.returnDate.getTime() > 30 * 24 * 60 * 60 * 1000) // 30*24*60*60*1000
+																							// ms
 					continue;
 			}
-			result = result
-					+ record.recordId
-					+ ","
-					+ record.borrowerName
-					+ ","
-					+ record.tele
-					+ ","
-					+ (record.itemId == null || record.itemId == 0 ? ""
-							: record.itemId)
-					+ ","
-					+ (record.itemName == null ? "" : record.itemName)
-					+ ","
-					+ (record.itemInfo == null ? "" : record.itemInfo)
-					+ ","
-					+ record.borrowDate.getTime()
-					+ ","
-					+ (record.returnDate == null ? 0 : record.returnDate
-							.getTime()) + "," + record.number;
+			result = result + record.recordId + "," + record.borrowerName + "," + record.tele + ","
+					+ (record.itemId == null || record.itemId == 0 ? "" : record.itemId) + ","
+					+ (record.itemName == null ? "" : record.itemName) + ","
+					+ (record.itemInfo == null ? "" : record.itemInfo) + "," + record.borrowDate.getTime() + ","
+					+ (record.returnDate == null ? 0 : record.returnDate.getTime()) + "," + record.number;
 			if (i < records.size() - 1) {
 				result += "|";
 			}
@@ -117,8 +102,7 @@ public class DBQuerrier {
 		Iteminfo iteminfo = (Iteminfo) query.uniqueResult();
 
 		if (iteminfo != null) {
-			result = result + iteminfo.id + "," + iteminfo.name + ","
-					+ iteminfo.description + "," + iteminfo.type + ","
+			result = result + iteminfo.id + "," + iteminfo.name + "," + iteminfo.description + "," + iteminfo.type + ","
 					+ iteminfo.count + "," + iteminfo.leftcount;
 		}
 		result += "]";
@@ -144,24 +128,11 @@ public class DBQuerrier {
 		// System.out.println(records.size());
 
 		if (record != null) {
-			result = result
-					+ record.recordId
-					+ ","
-					+ record.borrowerName
-					+ ","
-					+ record.tele
-					+ ","
-					+ (record.itemId == null || record.itemId == 0 ? ""
-							: record.itemId)
-					+ ","
-					+ (record.itemName == null ? "" : record.itemName)
-					+ ","
-					+ (record.itemInfo == null ? "" : record.itemInfo)
-					+ ","
-					+ record.borrowDate.getTime()
-					+ ","
-					+ (record.returnDate == null ? 0 : record.returnDate
-							.getTime()) + "," + record.number;
+			result = result + record.recordId + "," + record.borrowerName + "," + record.tele + ","
+					+ (record.itemId == null || record.itemId == 0 ? "" : record.itemId) + ","
+					+ (record.itemName == null ? "" : record.itemName) + ","
+					+ (record.itemInfo == null ? "" : record.itemInfo) + "," + record.borrowDate.getTime() + ","
+					+ (record.returnDate == null ? 0 : record.returnDate.getTime()) + "," + record.number;
 		}
 
 		result += "]";
@@ -185,23 +156,20 @@ public class DBQuerrier {
 		}
 
 		if ("".equals(parars[2])) {
-			br = new Borrowrecord(parars[0], parars[1], 0, parars[3],
-					parars[4], new Date(), null, borrowCount);
+			br = new Borrowrecord(parars[0], parars[1], 0, parars[3], parars[4], new Date(), null, borrowCount);
 		} else {
 			ii = getDevice(parars[2]);
 			if (!"[]".equals(ii)) {
 				String[] infos = ii.split(",");
-				String leftCountString = infos[5].substring(0,
-						infos[5].length() - 1);
+				String leftCountString = infos[5].substring(0, infos[5].length() - 1);
 				leftCount = Integer.parseInt(leftCountString);
 				if (leftCount < 1 || leftCount < borrowCount || borrowCount < 1) {
 					System.out.println("problem2:wrong number");
 					return "[0]";
 				}
 				System.out.println(infos[2]);
-				br = new Borrowrecord(parars[0], parars[1],
-						Integer.parseInt(parars[2]), infos[1], infos[2],
-						new Date(), null, borrowCount);
+				br = new Borrowrecord(parars[0], parars[1], Integer.parseInt(parars[2]), infos[1], infos[2], new Date(),
+						null, borrowCount);
 			} else {
 				System.out.println("problem4:no such item");
 				return "[0]";
@@ -239,8 +207,8 @@ public class DBQuerrier {
 
 		int borrowCount = 0;
 		try {
-			borrowCount = Integer.parseInt((paras[paras.length - 1].substring(
-					0, paras[paras.length - 1].length() - 1)));
+			borrowCount = Integer
+					.parseInt((paras[paras.length - 1].substring(0, paras[paras.length - 1].length() - 1)));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -317,8 +285,7 @@ public class DBQuerrier {
 
 		for (int i = 0; i < infos.size(); i++) {
 			Iteminfo iteminfo = infos.get(i);
-			result = result + iteminfo.id + "," + iteminfo.name + ","
-					+ iteminfo.description + "," + iteminfo.type + ","
+			result = result + iteminfo.id + "," + iteminfo.name + "," + iteminfo.description + "," + iteminfo.type + ","
 					+ iteminfo.count + "," + iteminfo.leftcount;
 			if (i != infos.size() - 1)
 				result = result + "|";
@@ -366,10 +333,10 @@ public class DBQuerrier {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String result = "";
-		// result=DBQuerrier.getDeviceList("ios");
+		result = DBQuerrier.getDeviceList("ios");
 		// result =
 		// DBQuerrier.borrowItem("全栈攻城狮薛哥,13194949494,,羽毛球,一个长得很可爱的羽毛球希望不要轻易狗带,1");
-		result = DBQuerrier.returnItem("4");
+		// result = DBQuerrier.returnItem("4");
 		// System.out.println(result);
 	}
 
